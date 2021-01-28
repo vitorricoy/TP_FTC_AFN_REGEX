@@ -1,10 +1,18 @@
-e1,e2,e3,e4
-0,1
-e1,e3
-e2,e4
-e1,0,e1
-e1,1,e2
-e2,0,e2
-e3,1,e3
-e3,0,e4
-e4,1,e4
+inicio,a=1,a=2,b=1 a=0,b=1 a=1,b=1 a=2,b=2 a=0,b=2 a=1,b=2 a=2,b=3 a=1,b=3 a=2,b=4 a=2
+a,b
+inicio
+b=2 a=0,b=3 a=1,b=4 a=2
+inicio,a,a=1
+inicio,b,b=1 a=0
+a=1,a,a=2
+a=1,b,b=1 a=1
+a=2,b,b=1 a=2
+b=1 a=0,b,b=2 a=0
+b=2 a=0,b,b=2 a=0
+b=1 a=1,b,b=2 a=1
+b=2 a=1,b,b=3 a=1
+b=3 a=1,b,b=3 a=1
+b=1 a=2,b,b=2 a=2
+b=2 a=2,b,b=3 a=2
+b=3 a=2,b,b=4 a=2
+b=4 a=2,b,b=4 a=2

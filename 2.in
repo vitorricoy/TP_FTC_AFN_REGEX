@@ -1,18 +1,16 @@
-e1,e2,e3,e4,e5,e6,e7,e8,e9
-0,1
-e1
-e9
-e1,lambda,e3
-e1,0,e2
-e2,0,e3
-e3,lambda,e1
-e3,1,e4
-e4,1,e5
-e5,lambda,e7
-e5,1,e6
-e6,1,e7
-e7,lambda,e5
-e7,lambda,e9
-e7,0,e8
-e8,0,e9
-e9,lambda,e7
+par a+b par a+c,par a+b impar a+c,impar a+b impar a+c,impar a+b par a+c
+a,b,c
+par a+b par a+c
+par a+b impar a+c
+par a+b par a+c,a,impar a+b impar a+c
+par a+b par a+c,b,impar a+b par a+c
+par a+b par a+c,c,par a+b impar a+c
+par a+b impar a+c,a,impar a+b par a+c
+par a+b impar a+c,b,impar a+b impar a+c
+par a+b impar a+c,c,par a+b par a+c
+impar a+b impar a+c,a,par a+b par a+c
+impar a+b impar a+c,b,par a+b impar a+c
+impar a+b impar a+c,c,impar a+b par a+c
+impar a+b par a+c,a,par a+b impar a+c
+impar a+b par a+c,b,par a+b par a+c
+impar a+b par a+c,c,impar a+b impar a+c
