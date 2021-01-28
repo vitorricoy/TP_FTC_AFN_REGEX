@@ -7,29 +7,6 @@ ESTADO_INICIO = 'estado_inicio_unico'
 ESTADO_FIM = 'estado_fim_unico'
 LAMBDA = 'lambda'
 
-def precisa_parenteses_para_concatenar(atual):
-    fim = atual.find(')')
-    if fim == -1:
-      return '+' in atual
-    
-    inicio = atual[:fim].rfind('(')
-    while inicio != -1 and fim != -1:
-      atual = atual[:inicio] + atual[fim+1:]
-      if fim == -1:
-          break
-      inicio = atual[:fim].rfind('(')
-    return '+' in atual
-
-def tem_parenteses_nas_pontas(resposta):
-    posicoesAberto = []
-    ultimoRemovido = -1
-    for i in range(0, len(resposta)):
-      if resposta[i] == '(':
-          posicoesAberto.append(i)
-      if resposta[i] == ')':
-          ultimoRemovido = posicoesAberto.pop()
-    return ultimoRemovido == 0 and resposta.endswith(')')
-
 def ler_estados(arq):
     estados_string = arq.readline().strip()
     estados = estados_string.split(',')
@@ -89,7 +66,31 @@ def estado_valido_saida(estado_saida, estado_removido, grafo, removidos):
     return grafo[estado_removido][estado_saida] and estado_removido != estado_saida and estado_saida not in removidos
 
 def estado_valido_entrada(estado_entrada, estado_removido, grafo, removidos):
-    return grafo[estado_entrada][estado_removido] and estado != estado_entrada and estado_entrada not in removidos
+    return grafo[estado_entrada][estado_removido] and estado_removido != estado_entrada and estado_entrada not in removidos
+
+def precisa_parenteses_para_concatenar(atual):
+    fim = atual.find(')')
+    if fim == -1:
+      return '+' in atual
+    
+    inicio = atual[:fim].rfind('(')
+    while inicio != -1 and fim != -1:
+      atual = atual[:inicio] + atual[fim+1:]
+      if fim == -1:
+          break
+      inicio = atual[:fim].rfind('(')
+    return '+' in atual
+
+def tem_parenteses_nas_pontas(resposta):
+    posicoesAberto = []
+    ultimoRemovido = -1
+    for i in range(0, len(resposta)):
+      if resposta[i] == '(':
+          posicoesAberto.append(i)
+      if resposta[i] == ')':
+          ultimoRemovido = posicoesAberto.pop()
+    return ultimoRemovido == 0 and resposta.endswith(')')
+
 
 def obter_transicao_entrada(estado_entrada, estado_removido, grafo):
     if grafo[estado_entrada][estado_removido] != LAMBDA:
@@ -117,36 +118,40 @@ def obter_nova_aresta(estado_entrada, estado_saida, nova_aresta, grafo):
         return grafo[estado_entrada][estado_saida]+' + '+nova_aresta
     return nova_aresta
 
+def remover_estados(grafo, estados):
+    removidos = set()
+    for estado_removido in estados[:-2]:
+        self_loop = False
+        if grafo[estado_removido][estado_removido]:
+          self_loop = True
+        for estado_entrada in estados:
+          if estado_valido_entrada(estado_entrada, estado_removido, grafo, removidos):
+              for estado_saida in estados:
+                if estado_valido_saida(estado_saida, estado_removido, grafo, removidos):
+                    nova_aresta = ''
+                    
+                    nova_aresta += obter_transicao_entrada(estado_entrada, estado_removido, grafo)
+                    nova_aresta += obter_transicao_self_loop(self_loop, estado_removido, grafo)
+                    nova_aresta += obter_transicao_saida(estado_saida, estado_removido, grafo)
+                    
+                    if nova_aresta == '':
+                      nova_aresta = LAMBDA
+                    
+                    grafo[estado_entrada][estado_saida] = obter_nova_aresta(estado_entrada, estado_saida, nova_aresta, grafo)
+                    
+        for estado in estados:
+          grafo[estado][estado_removido] = ''
+          grafo[estado_removido][estado] = ''
+        removidos.add(estado_removido)
+    return grafo
+
+def obter_resposta(grafo):
+    resposta = grafo[ESTADO_INICIO][ESTADO_FIM]
+    while tem_parenteses_nas_pontas(resposta):
+        resposta = resposta[1:-1]
+    return resposta
+
 grafo, estados = construir_automato()
-
-removidos = set()
-
-# Remove os estados
-for estado_removido in estados[:-2]:
-    self_loop = False
-    if grafo[estado_removido][estado_removido]:
-      self_loop = True
-    for estado_entrada in estados:
-      if estado_valido_entrada(estado_entrada, estado_removido, grafo, removidos)
-          for estado_saida in estados:
-            if estado_valido_saida(estado_saida, estado_removido, grafo, removidos):
-                nova_aresta = ''
-                
-                nova_aresta += obter_transicao_entrada(estado_entrada, estado_removido, grafo)
-                nova_aresta += obter_transicao_self_loop(self_loop, estado_removido, grafo)
-                nova_aresta += obter_transicao_saida(estado_saida, estado_removido, grafo)
-                
-                if nova_aresta == '':
-                  nova_aresta = LAMBDA
-                
-                grafo[estado_entrada][estado_saida] = obter_nova_aresta(estado_entrada, estado_saida, nova_aresta, grafo)
-                
-    for estado in estados:
-      grafo[estado][estado_removido] = ''
-      grafo[estado_removido][estado] = ''
-    removidos.add(estado)
-
-resposta = grafo[ESTADO_INICIO][ESTADO_FIM]
-while tem_parenteses_nas_pontas(resposta):
-    resposta = resposta[1:-1]
+grafo = remover_estados(grafo, estados)
+resposta = obter_resposta(grafo)
 print(resposta)
