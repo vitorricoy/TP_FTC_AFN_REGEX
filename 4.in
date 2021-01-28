@@ -1,0 +1,15 @@
+e1,e2,e3,e4,e5,e6,e7
+a,b,c
+e1
+e7
+e1,a,e2,e1
+e1,b,e1
+e1,c,e1
+e2,a,e3
+e3,c,e4
+e4,c,e5
+e5,b,e6
+e6,b,e7
+e7,a,e7
+e7,b,e7
+e7,c,e7

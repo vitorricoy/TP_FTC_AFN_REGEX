@@ -1,0 +1,14 @@
+e1,e2,e3,e4,e5,e6
+0,1
+e1
+e6
+e1,0,e2
+e1,lambda,e3
+e2,1,e3
+e3,lambda,e1
+e3,0,e4
+e3,1,e5
+e3,lambda,e5
+e4,0,e5
+e5,lambda,e3
+e5,0,e6

@@ -1,0 +1,19 @@
+inicio,tam%3=1,tam%3=2,tam%3=0 a ou c,tam%3=0 b
+a,b,c
+inicio
+tam%3=0 a ou c
+inicio,a,tam%3=1
+inicio,b,tam%3=1
+inicio,c,tam%3=1
+tam%3=1,a,tam%3=2
+tam%3=1,b,tam%3=2
+tam%3=1,c,tam%3=2
+tam%3=2,a,tam%3=0 a ou c
+tam%3=2,c,tam%3=0 a ou c
+tam%3=2,b,tam%3=0 b
+tam%3=0 b,a,tam%3=1
+tam%3=0 b,b,tam%3=1
+tam%3=0 b,c,tam%3=1
+tam%3=0 a ou c,a,tam%3=1
+tam%3=0 a ou c,b,tam%3=1
+tam%3=0 a ou c,c,tam%3=1
