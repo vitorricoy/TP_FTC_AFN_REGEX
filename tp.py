@@ -3,108 +3,150 @@
 import numpy as np
 import sys
 
-def precisaDeParentesesParaConcatenar(atual):
-  fim = atual.find(')')
-  if fim == -1:
-    return '+' in atual
-  
-  inicio = atual[:fim].rfind('(')
-  while inicio != -1 and fim != -1:
-    atual = atual[:inicio] + atual[fim+1:]
+ESTADO_INICIO = 'estado_inicio_unico'
+ESTADO_FIM = 'estado_fim_unico'
+LAMBDA = 'lambda'
+
+def precisa_parenteses_para_concatenar(atual):
+    fim = atual.find(')')
     if fim == -1:
-      break
+      return '+' in atual
+    
     inicio = atual[:fim].rfind('(')
-  return '+' in atual
+    while inicio != -1 and fim != -1:
+      atual = atual[:inicio] + atual[fim+1:]
+      if fim == -1:
+          break
+      inicio = atual[:fim].rfind('(')
+    return '+' in atual
 
-def parentesesNasPontas(resposta):
-  posicoesAberto = []
-  ultimoRemovido = -1
-  for i in range(0, len(resposta)):
-    if resposta[i] == '(':
-      posicoesAberto.append(i)
-    if resposta[i] == ')':
-      ultimoRemovido = posicoesAberto.pop()
-  return ultimoRemovido == 0 and resposta.endswith(')')
+def tem_parenteses_nas_pontas(resposta):
+    posicoesAberto = []
+    ultimoRemovido = -1
+    for i in range(0, len(resposta)):
+      if resposta[i] == '(':
+          posicoesAberto.append(i)
+      if resposta[i] == ')':
+          ultimoRemovido = posicoesAberto.pop()
+    return ultimoRemovido == 0 and resposta.endswith(')')
 
-arq = open(sys.argv[1])
+def ler_estados(arq):
+    estados_string = arq.readline().strip()
+    estados = estados_string.split(',')
+    estados.append(ESTADO_INICIO)
+    estados.append(ESTADO_FIM)
+    return estados
 
-estados_string = arq.readline().strip()
-estados = estados_string.split(',')
-estados.append('estado_inicio_unico')
-estados.append('estado_fim_unico')
+def ler_simbolos(arq):
+    simbolos_string = arq.readline().strip()
+    simbolos = simbolos_string.split(',')
+    return simbolos
 
-simbolos_string = arq.readline().strip()
-simbolos = simbolos_string.split(',')
+def ler_estados_iniciais(arq):
+    estados_iniciais_string = arq.readline().strip()
+    estados_iniciais = estados_iniciais_string.split(',')
+    return estados_iniciais
 
-estados_iniciais_string = arq.readline().strip()
-estados_iniciais = estados_iniciais_string.split(',')
+def ler_estados_finais(arq):
+    estados_finais_string = arq.readline().strip()
+    estados_finais = estados_finais_string.split(',')
+    return estados_finais
 
-estados_finais_string = arq.readline().strip()
-estados_finais = estados_finais_string.split(',')
+def inicializa_grafo(estados, estados_iniciais, estados_finais):
+    grafo = {}
+    for estado1 in estados:
+      grafo[estado1] = {}
+      for estado2 in estados:
+          grafo[estado1][estado2] = ''
+    for estado in estados_iniciais:
+      grafo[ESTADO_INICIO][estado] = LAMBDA
 
-grafo = {}
+    for estado in estados_finais:
+      grafo[estado][ESTADO_FIM] = LAMBDA
+    return grafo
 
-for estado1 in estados:
-  grafo[estado1] = {}
-  for estado2 in estados:
-    grafo[estado1][estado2] = ''
+def construir_automato():
+    arq = open(sys.argv[1])
+    estados = ler_estados(arq)
+    simbolos = ler_simbolos(arq)
+    estados_iniciais = ler_estados_iniciais(arq)
+    estados_finais = ler_estados_finais(arq)
 
-for estado in estados_iniciais:
-  grafo['estado_inicio_unico'][estado] = 'lambda'
+    grafo = inicializa_grafo(estados, estados_iniciais, estados_finais)
 
-for estado in estados_finais:
-  grafo[estado]['estado_fim_unico'] = 'lambda'
+    for linha in arq:
+      lista = linha.strip().split(',')
+      for el in lista[2:]:
+          if grafo[lista[0]][el]:
+            grafo[lista[0]][el]+=' + ' + lista[1]
+          else: 
+            grafo[lista[0]][el]=lista[1]
+    
+    arq.close()
+    return (grafo, estados)
 
-for linha in arq:
-  lista = linha.strip().split(',')
-  for el in lista[2:]:
-    if grafo[lista[0]][el]:
-      grafo[lista[0]][el]+=' + ' + lista[1]
-    else: 
-      grafo[lista[0]][el]=lista[1]
+def estado_valido_saida(estado_saida, estado_removido, grafo, removidos):
+    return grafo[estado_removido][estado_saida] and estado_removido != estado_saida and estado_saida not in removidos
 
-# for i in grafo:
-#   for j in grafo[i]:
-#     print('grafo['+i+']['+j+'] = '+grafo[i][j])
+def estado_valido_entrada(estado_entrada, estado_removido, grafo, removidos):
+    return grafo[estado_entrada][estado_removido] and estado != estado_entrada and estado_entrada not in removidos
+
+def obter_transicao_entrada(estado_entrada, estado_removido, grafo):
+    if grafo[estado_entrada][estado_removido] != LAMBDA:
+        if precisa_parenteses_para_concatenar(grafo[estado_entrada][estado_removido]):
+            return '('+grafo[estado_entrada][estado_removido]+')'
+        else:
+            return grafo[estado_entrada][estado_removido]
+    return ''
+
+def obter_transicao_self_loop(self_loop, estado_removido, grafo):
+    if self_loop:
+        return '('+grafo[estado_removido][estado_removido]+')*'
+    return ''
+
+def obter_transicao_saida(estado_saida, estado_removido, grafo):
+    if grafo[estado_removido][estado_saida]!= LAMBDA:
+        if precisa_parenteses_para_concatenar(grafo[estado_removido][estado_saida]):
+            return '('+grafo[estado_removido][estado_saida]+')'
+        else:
+            return grafo[estado_removido][estado_saida]
+    return ''
+
+def obter_nova_aresta(estado_entrada, estado_saida, nova_aresta, grafo):
+    if grafo[estado_entrada][estado_saida]:
+        return grafo[estado_entrada][estado_saida]+' + '+nova_aresta
+    return nova_aresta
+
+grafo, estados = construir_automato()
 
 removidos = set()
 
 # Remove os estados
-for estado in estados[:-2]:
-  selfLoop = False
-  if grafo[estado][estado]:
-    selfLoop = True
-  for estadoEntrada in estados:
-    if grafo[estadoEntrada][estado] and estado != estadoEntrada and estadoEntrada not in removidos:
-      for estadoSaida in estados:
-        if grafo[estado][estadoSaida] and estado != estadoSaida and estadoSaida not in removidos:
-          novaAresta = ''
-          if grafo[estadoEntrada][estado] != 'lambda':
-            if precisaDeParentesesParaConcatenar(grafo[estadoEntrada][estado]):
-              novaAresta = '('+grafo[estadoEntrada][estado]+')'
-            else:
-              novaAresta = grafo[estadoEntrada][estado]
-          if selfLoop:
-              novaAresta += '('+grafo[estado][estado]+')*'
-          if grafo[estado][estadoSaida]!= 'lambda':
-            if precisaDeParentesesParaConcatenar(grafo[estado][estadoSaida]):
-              novaAresta += '('+grafo[estado][estadoSaida]+')'
-            else:
-              novaAresta += grafo[estado][estadoSaida]
-          if novaAresta == '':
-            novaAresta = 'lambda'
-          if grafo[estadoEntrada][estadoSaida]:
-            grafo[estadoEntrada][estadoSaida]+= ' + '+novaAresta
-          else:
-            grafo[estadoEntrada][estadoSaida] = novaAresta
-          #print('aresta de', estadoEntrada, ' até ', estadoSaida, ' colocou ', novaAresta, ' virou ', grafo[estadoEntrada][estadoSaida])
-  for estado2 in estados:
-    grafo[estado2][estado] = ''
-    grafo[estado][estado2] = ''
-  grafo[estado][estado] = ''
-  removidos.add(estado)
+for estado_removido in estados[:-2]:
+    self_loop = False
+    if grafo[estado_removido][estado_removido]:
+      self_loop = True
+    for estado_entrada in estados:
+      if estado_valido_entrada(estado_entrada, estado_removido, grafo, removidos)
+          for estado_saida in estados:
+            if estado_valido_saida(estado_saida, estado_removido, grafo, removidos):
+                nova_aresta = ''
+                
+                nova_aresta += obter_transicao_entrada(estado_entrada, estado_removido, grafo)
+                nova_aresta += obter_transicao_self_loop(self_loop, estado_removido, grafo)
+                nova_aresta += obter_transicao_saida(estado_saida, estado_removido, grafo)
+                
+                if nova_aresta == '':
+                  nova_aresta = LAMBDA
+                
+                grafo[estado_entrada][estado_saida] = obter_nova_aresta(estado_entrada, estado_saida, nova_aresta, grafo)
+                
+    for estado in estados:
+      grafo[estado][estado_removido] = ''
+      grafo[estado_removido][estado] = ''
+    removidos.add(estado)
 
-resposta = grafo['estado_inicio_unico']['estado_fim_unico']
-while parentesesNasPontas(resposta):
-  resposta = resposta[1:-1]
+resposta = grafo[ESTADO_INICIO][ESTADO_FIM]
+while tem_parenteses_nas_pontas(resposta):
+    resposta = resposta[1:-1]
 print(resposta)
