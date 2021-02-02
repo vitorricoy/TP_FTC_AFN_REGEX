@@ -57,6 +57,9 @@ def constroi_grafo(arq, estados, estados_iniciais, estados_finais):
     # Le as transições do AF e adiciona cada transição como valor da aresta do grafo
     for linha in arq:
       lista = linha.strip().split(',')
+      # Define que a transição com o símbolo vazio é uma transição lambda
+      if lista[1] == '':
+          lista[1] = LAMBDA
       for el in lista[2:]:
           if grafo[lista[0]][el]:
             # Caso mais de um símbolo faça a mesma transição, tranforma a transição  
@@ -223,6 +226,7 @@ def obter_resposta(grafo):
         resposta = resposta[1:-1]
     return resposta
 
+# Programa principal
 grafo, estados = construir_automato()
 grafo = remover_estados(grafo, estados)
 resposta = obter_resposta(grafo)
