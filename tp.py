@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import sys
 
@@ -194,7 +195,6 @@ def obter_resposta(grafo):
 # Executa o algoritmo para obter a ER a partir do diagrama ER
 # construído a partir do AF
 def converter_para_er(grafo, estados):
-    removidos = set()
     # Obtém os pares (#p(e), e) ordenados
     estados_pares = calcularNumeroPares(grafo, estados)
     # Remove todos os estados diferente do estado final e inicial único
@@ -208,9 +208,9 @@ def converter_para_er(grafo, estados):
         # Itera pelos possíveis estados de entrada e saída, tal que existe a transição:
         # estado_entrada  -> estado_removido -> estado_saida
         for estado_entrada in estados:
-            if estado_valido_entrada(estado_entrada, estado_removido, grafo) and estado_entrada not in removidos:
+            if estado_valido_entrada(estado_entrada, estado_removido, grafo):
                 for estado_saida in estados:
-                    if estado_valido_saida(estado_saida, estado_removido, grafo) and estado_saida not in removidos:
+                    if estado_valido_saida(estado_saida, estado_removido, grafo):
                         # Inicialmente a nova aresta não possui nenhuma ER
                         nova_aresta = ''
                         # Forma a ER da nova aresta
@@ -227,7 +227,6 @@ def converter_para_er(grafo, estados):
         for estado in estados:
             grafo[estado][estado_removido] = ''
             grafo[estado_removido][estado] = ''
-        removidos.add(estado_removido)
     return obter_resposta(grafo)
 
 # Programa principal
