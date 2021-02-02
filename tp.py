@@ -179,9 +179,17 @@ def calcularNumeroPares(grafo, estados):
     numero_pares.sort()
     return numero_pares
 
+# Processa a ER obtida como resposta
+def obter_resposta(grafo):
+    resposta = grafo[ESTADO_INICIO][ESTADO_FIM]
+    # Remove possíveis parênteses redundantes nas pontas da resposta
+    while tem_parenteses_nas_pontas(resposta):
+        resposta = resposta[1:-1]
+    return resposta
+
 # Executa o algoritmo para obter a ER a partir do diagrama ER
 # construído a partir do AF
-def remover_estados(grafo, estados):
+def converter_para_er(grafo, estados):
     removidos = set()
     # Obtém os pares (#p(e), e) ordenados
     estados_pares = calcularNumeroPares(grafo, estados)
@@ -216,19 +224,11 @@ def remover_estados(grafo, estados):
             grafo[estado][estado_removido] = ''
             grafo[estado_removido][estado] = ''
         removidos.add(estado_removido)
-    return grafo
-
-# Processa a ER obtida como resposta
-def obter_resposta(grafo):
-    resposta = grafo[ESTADO_INICIO][ESTADO_FIM]
-    # Remove possíveis parênteses redundantes nas pontas da resposta
-    while tem_parenteses_nas_pontas(resposta):
-        resposta = resposta[1:-1]
-    return resposta
+    return obter_resposta(grafo)
 
 # Programa principal
 grafo, estados = construir_automato()
-grafo = remover_estados(grafo, estados)
-resposta = obter_resposta(grafo)
+resposta = converter_para_er(grafo, estados)
+
 # Imprime a ER obtida
 print(resposta)
