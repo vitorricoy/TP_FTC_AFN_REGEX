@@ -5,7 +5,8 @@ import sys
 # Define constantes usadas no código
 ESTADO_INICIO = 'estado_inicio_unico'
 ESTADO_FIM = 'estado_fim_unico'
-LAMBDA = 'lambda'
+LAMBDA = 'λ'
+VAZIO = '∅'
 
 # Le os estados do AF
 def ler_estados(arq):
@@ -185,6 +186,9 @@ def obter_resposta(grafo):
     # Remove possíveis parênteses redundantes nas pontas da resposta
     while tem_parenteses_nas_pontas(resposta):
         resposta = resposta[1:-1]
+    # Determina que caso a resposta seja a linguagem vazia, a saída deve ser o símbolo de vazio
+    if resposta == '':
+        resposta = VAZIO
     return resposta
 
 # Executa o algoritmo para obter a ER a partir do diagrama ER
