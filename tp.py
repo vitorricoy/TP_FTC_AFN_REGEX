@@ -93,8 +93,8 @@ def estado_valido_entrada(estado_entrada, estado_removido, grafo):
     # ou seja, se existe a transição estado_entrada -> estado_removido no diagrama ER atual
     return grafo[estado_entrada][estado_removido] and estado_removido != estado_entrada
 
-# Verifica se a expressão regular enviada no paramêtro pode ser concatenada,
-# sem alterar seu significado, com outra expressão sem utilizar parênteses
+# Verifica se a expressão regular enviada no paramêtro pode ser concatenada com outra expressão
+# sem utilizar parênteses e sem alterar seu significado
 def precisa_parenteses_para_concatenar(atual):
     # Verifica se existe algum operador + fora de parênteses na ER atual
     # Caso exista, essa ER não pode ser concatenada sem os parênteses
@@ -198,7 +198,7 @@ def converter_para_er(grafo, estados):
     # Obtém os pares (#p(e), e) ordenados
     estados_pares = calcularNumeroPares(grafo, estados)
     # Remove todos os estados diferente do estado final e inicial único
-    # Remove na ordem de menor #p(e), seguindo a eurística sugerida no livro
+    # Remove na ordem de menor #p(e), seguindo a heurística sugerida no livro
     # para obter ER menores
     for pares, estado_removido in estados_pares:
         # Determina se o estado sendo removido possui um self loop
