@@ -1,13 +1,13 @@
+'''
+Módulo responsável por converter o AF, representado como um diagrama ER, 
+para uma expressão regular
+'''
+
 # Define constantes usadas no código
 ESTADO_INICIO = 'estado_inicio_unico'
 ESTADO_FIM = 'estado_fim_unico'
 LAMBDA = 'λ'
 VAZIO = '∅'
-
-'''
-Módulo responsável por converter o AF, representado como um diagrama ER, 
-para uma expressão regular
-'''
 
 def __estado_valido_saida(estado_saida, estado_removido, grafo):
     # Determina se o estado pode ser considerado um estado de saída válido, 
